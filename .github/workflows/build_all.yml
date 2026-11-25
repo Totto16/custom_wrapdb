@@ -96,7 +96,7 @@ jobs:
             apk-tools-url: 'https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v3.0.7/x86_64/apk.static#!sha256!c07bf5356eacc9dd7a8c56bc537f46702f007170287403299d52a04264e74b3c'
 
   Ubuntu:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     name: Ubuntu (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude
@@ -128,7 +128,7 @@ jobs:
           ./tools/fake_tty.py ./tools/sanity_checks.py
 
   Alpine:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     name: Alpine (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude
@@ -190,7 +190,7 @@ jobs:
         shell: alpine.sh {0}
 
   VisualStudio:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     runs-on: windows-latest
     needs: prelude
     strategy:
@@ -231,7 +231,7 @@ jobs:
           python tools/sanity_checks.py
 
   VisualStudio-clang-cl:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     runs-on: windows-latest
     needs: prelude
     env:
@@ -261,7 +261,7 @@ jobs:
           python tools/sanity_checks.py
 
   MSYS2:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     runs-on: windows-latest
     needs: prelude
     strategy:
@@ -310,7 +310,7 @@ jobs:
           python tools/sanity_checks.py
 
   MacOS:
-    if: github.event_name != 'schedule' || github.repository == 'mesonbuild/wrapdb'
+    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
     name: MacOS (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude

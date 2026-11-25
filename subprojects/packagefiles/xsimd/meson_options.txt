@@ -1,5 +1,0 @@
-option(
-    'xtl_complex',
-    type: 'feature',
-    description: 'Support for complex numbers from xtl',
-)

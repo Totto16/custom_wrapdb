@@ -1,8 +1,0 @@
-[wrap-file]
-directory = libxml++-5.6.1
-source_url = https://github.com/libxmlplusplus/libxmlplusplus/releases/download/5.6.1/libxml++-5.6.1.tar.xz
-source_filename = libxml++-5.6.1.tar.xz
-source_hash = 4996e8a73995e8a4cd656c8591dce38181146edfc30cb47c97d1db3c56990ad7
-
-[provide]
-dependency_names = libxml++-5.0

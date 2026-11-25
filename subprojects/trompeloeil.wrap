@@ -1,9 +1,0 @@
-[wrap-file]
-directory = trompeloeil-49
-source_url = https://github.com/rollbear/trompeloeil/archive/v49.tar.gz
-source_filename = trompeloeil-49.tar.gz
-source_hash = 2523571fb7920b2813cbc23b46e60294aba8ead7eba434bfec69c24408615593
-patch_directory = trompeloeil
-
-[provide]
-trompeloeil = trompeloeil_dep

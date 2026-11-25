@@ -1,9 +1,0 @@
-[wrap-file]
-directory = libffi-3.8.0
-source_url = https://github.com/libffi/libffi/releases/download/v3.8.0/libffi-3.8.0.tar.gz
-source_filename = libffi-3.8.0.tar.gz
-source_hash = 7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4
-patch_directory = libffi
-
-[provide]
-dependency_names = libffi

@@ -1,9 +1,0 @@
-[wrap-file]
-directory = liblangtag-0.6.7
-source_url = https://bitbucket.org/tagoh/liblangtag/downloads/liblangtag-0.6.7.tar.bz2
-source_filename = liblangtag-0.6.7.tar.bz2
-source_hash = 5ed6bcd4ae3f3c05c912e62f216cd1a44123846147f729a49fb5668da51e030e
-patch_directory = liblangtag
-
-[provide]
-liblangtag = liblangtag_dep

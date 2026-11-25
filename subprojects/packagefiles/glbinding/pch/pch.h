@@ -1,1 +1,0 @@
-#include <glbinding/Binding.h>

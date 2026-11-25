@@ -1,6 +1,0 @@
-option(
-    'install',
-    type: 'boolean',
-    value: true,
-)
-

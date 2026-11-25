@@ -1,9 +1,0 @@
-[wrap-file]
-directory = gc-8.2.10
-source_url = https://github.com/bdwgc/bdwgc/releases/download/v8.2.10/gc-8.2.10.tar.gz
-source_filename = gc-8.2.10.tar.gz
-source_hash = 832cf4f7cf676b59582ed3b1bbd90a8d0e0ddbc3b11cb3b2096c5177ce39cc47
-patch_directory = bdwgc
-
-[provide]
-dependency_names = bdw-gc

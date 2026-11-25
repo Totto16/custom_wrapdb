@@ -1,5 +1,0 @@
-EXPORTS
-;
-netstring_read
-netstring_buffer_size
-netstring_encode_new

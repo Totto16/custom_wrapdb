@@ -1,5 +1,0 @@
-fs = import('fs')
-fs.copyfile('ding.flac')
-fs.copyfile('ding.mp3')
-fs.copyfile('doodle_pop.ogg')
-fs.copyfile('killdeer.wav')

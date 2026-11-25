@@ -1,8 +1,0 @@
-option(
-    'progs',
-    type: 'feature',
-)
-option(
-    'tests',
-    type: 'feature',
-)

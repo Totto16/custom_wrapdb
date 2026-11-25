@@ -1,9 +1,0 @@
-option(
-    'examples',
-    type: 'feature',
-    value: 'disabled',
-)
-option(
-    'tests',
-    type: 'feature',
-)

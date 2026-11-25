@@ -1,5 +1,0 @@
-option(
-    'libreadline',
-    type: 'feature',
-    description: 'Build with libreadline support',
-)

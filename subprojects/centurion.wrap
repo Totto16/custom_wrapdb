@@ -1,9 +1,0 @@
-[wrap-file]
-directory = centurion-7.3.0
-source_url = https://github.com/albin-johansson/centurion/archive/refs/tags/v7.3.0.zip
-source_filename = centurion-7.3.0.zip
-source_hash = b607a27d17c25d412ef1a6e1db32c527b0cfef1712f0128361abb18624c7d03e
-patch_directory = centurion
-
-[provide]
-dependency_names = centurion

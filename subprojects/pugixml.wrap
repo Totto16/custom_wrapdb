@@ -1,9 +1,0 @@
-[wrap-file]
-directory = pugixml-1.15
-source_url = https://github.com/zeux/pugixml/archive/v1.15.tar.gz
-source_filename = pugixml-1.15.tar.gz
-source_hash = b39647064d9e28297a34278bfb897092bf33b7c487906ddfc094c9e8868bddcb
-patch_directory = pugixml
-
-[provide]
-pugixml = pugixml_dep

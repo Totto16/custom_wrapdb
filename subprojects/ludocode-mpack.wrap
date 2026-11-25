@@ -1,9 +1,0 @@
-[wrap-file]
-directory = mpack-1.1.1
-source_url = https://github.com/ludocode/mpack/archive/v1.1.1.tar.gz
-source_filename = ludocode-mpack-1.1.1.tar.gz
-source_hash = 7e8dfc95266ac3e1a1a87383c01eb3bf66a61ae06374cf040b3383644bc8d2e6
-patch_directory = ludocode-mpack
-
-[provide]
-dependency_names = ludocode-mpack

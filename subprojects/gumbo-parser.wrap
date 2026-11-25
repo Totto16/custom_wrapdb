@@ -1,9 +1,0 @@
-[wrap-file]
-directory = gumbo-parser
-source_url = https://codeberg.org/grisha/gumbo-parser/archive/0.12.1.tar.gz
-source_filename = gumbo-parser-0.12.1.tar.gz
-source_hash = c0bb5354e46539680724d638dbea07296b797229a7e965b13305c930ddc10d82
-patch_directory = gumbo-parser
-
-[provide]
-dependency_names = gumbo

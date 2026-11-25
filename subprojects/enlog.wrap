@@ -1,8 +1,0 @@
-[wrap-file]
-directory = enlog-v1.8
-source_url = https://gitlab.com/c_enlog/enlog/-/archive/v1.8/enlog-v1.8.tar.bz2
-source_filename = enlog-v1.8.tar.bz2
-source_hash = 7bbff2726d90068d4fb22a78992f53638e75fd7a6cde63f25850b819a88523e6
-
-[provide]
-enlog = dep_enlog

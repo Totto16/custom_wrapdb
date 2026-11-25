@@ -1,9 +1,0 @@
-[wrap-file]
-directory = expat-2.8.5
-source_url = https://github.com/libexpat/libexpat/releases/download/R_2_8_5/expat-2.8.5.tar.xz
-source_filename = expat-2.8.5.tar.xz
-source_hash = 1e727b8933ec51a77a9a9d9afcf8e688bce45d907c13e36ab7393fe36e703182
-patch_directory = expat
-
-[provide]
-dependency_names = expat

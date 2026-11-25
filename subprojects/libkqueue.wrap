@@ -1,9 +1,0 @@
-[wrap-file]
-directory = libkqueue-2.6.3
-source_url = https://github.com/mheily/libkqueue/archive/refs/tags/v2.6.3.tar.gz
-source_filename = libkqueue-2.6.3.tar.gz
-source_hash = 7644993f87a099a5e5b655f501048549b91145006e4d7d5ad511d7ff3cf0b4e7
-patch_directory = libkqueue
-
-[provide]
-dependency_names = libkqueue

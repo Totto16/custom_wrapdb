@@ -1,9 +1,0 @@
-[wrap-file]
-directory = libcap-2.78
-source_url = https://git.kernel.org/pub/scm/libs/libcap/libcap.git/snapshot/libcap-2.78.tar.gz
-source_filename = libcap-2.78.tar.gz
-source_hash = 856e742e331bb53176231e1eae3588ab044e5564c811df3138bd2f1c7b953682
-patch_directory = libcap
-
-[provide]
-dependency_names = libcap

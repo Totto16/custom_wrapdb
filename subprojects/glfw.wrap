@@ -1,9 +1,0 @@
-[wrap-file]
-directory = glfw-3.4
-patch_directory = glfw
-source_url = https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
-source_filename = glfw-3.4.tar.gz
-source_hash = c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01
-
-[provide]
-dependency_names = glfw3

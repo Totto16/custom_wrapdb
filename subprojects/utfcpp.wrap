@@ -1,9 +1,0 @@
-[wrap-file]
-directory = utfcpp-4.0.8
-source_url = https://github.com/nemtrif/utfcpp/archive/refs/tags/v4.0.8.tar.gz
-source_filename = utfcpp-4.0.8.tar.gz
-source_hash = f808b26d8c3a59def27fea207182ece77a8930bd121a69f80d328ecf3cfef925
-patch_directory = utfcpp
-
-[provide]
-dependency_names = utf8cpp

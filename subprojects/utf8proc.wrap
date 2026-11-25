@@ -1,9 +1,0 @@
-[wrap-file]
-directory = utf8proc-2.10.0
-source_url = https://github.com/JuliaStrings/utf8proc/releases/download/v2.10.0/utf8proc-2.10.0.tar.gz
-source_filename = utf8proc-2.10.0.tar.gz
-source_hash = 276a37dc4d1dd24d7896826a579f4439d1e5fe33603add786bb083cab802e23e
-patch_directory = utf8proc
-
-[provide]
-libutf8proc = utf8proc_dep

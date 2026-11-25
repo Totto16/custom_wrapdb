@@ -1,8 +1,0 @@
-[wrap-file]
-directory = openh264-2.7.0
-source_url = https://github.com/cisco/openh264/archive/refs/tags/v2.7.0.tar.gz
-source_filename = openh264-2.7.0.tar.gz
-source_hash = 5178775c8b440073e70920e97d195efff721c0e56d0a78cc82c919e95d54924d
-
-[provide]
-openh264 = openh264_dep

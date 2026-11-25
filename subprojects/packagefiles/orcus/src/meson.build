@@ -1,2 +1,0 @@
-subdir('parser')
-subdir('liborcus')

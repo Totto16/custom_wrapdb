@@ -1,5 +1,0 @@
-option(
-    'tests',
-    type: 'feature',
-    description: 'Enable tests (requires Boost::unit_test_framework)',
-)

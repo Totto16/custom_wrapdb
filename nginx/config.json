@@ -1,0 +1,16 @@
+[
+    {
+        "comment": "The config I used",
+        "CUSTOM_DOMAIN": "wrap.totto.lt",
+        "GH_PAGES_URL": "hosted.wrap.totto.lt",
+        "GH_USER": "Totto16",
+        "GH_REPO": "custom_wrapdb"
+    },
+    {
+        "comment": "The config mesonbuild uses",
+        "CUSTOM_DOMAIN": "wrapdb.mesonbuild.com",
+        "GH_PAGES_URL": "mesonbuild.com",
+        "GH_USER": "mesonbuild",
+        "GH_REPO": "wrapdb"
+    }
+]

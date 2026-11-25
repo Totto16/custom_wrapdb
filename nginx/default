@@ -6,123 +6,49 @@
 # https://wiki.debian.org/Nginx/DirectoryStructure
 ##
 
-# This is the web server config for wrapdb.mesonbuild.com
+# This is the web server config for <CUSTOM_DOMAIN>
 
 server {
+
+  set $github_host github.com;
+  set $github_repo_user <GH_USER>;
+  set $github_repo_name <GH_REPO>;
+  set $wrap_custom_domain <CUSTOM_DOMAIN>;
+  set $wrap_gh_pages_domain <GH_PAGES_URL>;
+
   location /v2 {
-    rewrite ^.*/v2/releases.json$ https://mesonbuild.com/wrapdb/releases.json permanent;
-    rewrite ^.*/v2/([^/]+)/get_source/([^/]+)$ https://github.com/mesonbuild/wrapdb/releases/download/$1/$2 permanent;
-    rewrite ^.*/v2/([^/]+)/get_patch$ https://github.com/mesonbuild/wrapdb/releases/download/$1/$1_patch.zip permanent;
-    rewrite ^.*/v2/([^/]+)/([^/]+).wrap$ https://github.com/mesonbuild/wrapdb/releases/download/$1/$2.wrap permanent;
+    rewrite ^.*/v2/releases.json$ https://$wrap_gh_pages_domain/wrapdb/releases.json permanent;
+    rewrite ^.*/v2/([^/]+)/get_source/([^/]+)$ https://$github_host/$github_repo_user/$github_repo_name/releases/download/$1/$2 permanent;
+    rewrite ^.*/v2/([^/]+)/get_patch$ https://$github_host/$github_repo_user/$github_repo_name/releases/download/$1/$1_patch.zip permanent;
+    rewrite ^.*/v2/([^/]+)/([^/]+).wrap$ https://$github_host/$github_repo_user/$github_repo_name/releases/download/$1/$2.wrap permanent;
   }
 
-  # Redirect legacy v1 patch URLs.
-  # FIXME: This breaks download of sqlite that has not been imported to v2 because it is replaced by sqlite3 (xclaesse)
-  # NOTE: no longer needed, we now serve v1 patch URLs directly from a static files mirror (in /var/www/v1-static, see below) (Tim, Nov 2024)
-  #location ~ get_zip$ {
-  #  rewrite ^.*/v1/projects/([^/]+)/([^/]+)/([^/]+)/get_zip https://github.com/mesonbuild/wrapdb/releases/download/$1_$2-$3/$1_$2-$3_patch.zip permanent;
-  #}
+  # Disable legacy v1 patch URLs.
+  location ~ get_zip$ {
+    return 501;
+  }
 
   location = / {
-    return 301 https://mesonbuild.com/Wrapdb-projects.html;
+    return 301 https://$wrap_gh_pages_domain/Wrapdb-projects.html;
   }
 
-  # Serve v1 files from a static mirror (requires redirects because the
-  # structure of the mirror can't 1:1 map to the file path in the request URIs,
-  # as we have to disambiguate files and directories for the same path).
-  # (Tim, 3 Nov 2024)
-  #
-  # See https://github.com/tp-m/wrapdb-v1-api-mirror/
-  #
+  # Disable legacy v1 patch URLs.
   location /v1/ {
-
-    # v1 project list redirect
-    location = /v1/projects {
-      return 301 https://wrapdb.mesonbuild.com/v1-static/-/projects;
-    }
-
-    # v1 project info redirect
-    location /v1/projects/ {
-      rewrite ^.*/v1/projects/([^/]+)$ https://wrapdb.mesonbuild.com/v1-static/projects/-/$1 permanent;
-    }
-
-    # v1 get_latest redirect to static mirror
-    location /v1/query/get_latest/ {
-      rewrite ^.*/v1/query/get_latest/([^/]+)$ https://wrapdb.mesonbuild.com/v1-static/query/get_latest/-/$1 permanent;
-    }
-
-    # v1 get_wrap redirect to static mirror
-    location ~ /v1/projects/[^/]+/[^/]+/[^/]+/get_wrap$ {
-      rewrite ^.*/v1/projects/([^/]+)/([^/]+)/([^/]+)/get_wrap$ https://wrapdb.mesonbuild.com/v1-static/projects/$1/$2/$3/-/get_wrap permanent;
-      #rewrite ^.*/v1/projects/([^/]+)/([^/]+)/([^/]+)/get_wrap$ https://wrapdb.mesonbuild.com/v1-static/projects/$1/$2/$3/$1-$2-$3.wrap permanent;
-    }
-
-    # v1 get_zip redirect to static mirror
-    location ~ /v1/projects/[^/]+/[^/]+/[^/]+/get_zip$ {
-      rewrite ^.*/v1/projects/([^/]+)/([^/]+)/([^/]+)/get_zip$ https://wrapdb.mesonbuild.com/v1-static/projects/$1/$2/$3/-/get_zip permanent;
-      #rewrite ^.*/v1/projects/([^/]+)/([^/]+)/([^/]+)/get_zip$ https://wrapdb.mesonbuild.com/v1-static/projects/$1/$2/$3/$1-$2-$3-wrap.zip permanent;
-    }
+    return 501;
   }
 
-  # Make sure v1 files served from static mirror are decorated with the
-  # right Content-type and where applicable Content-disposition headers.
-  #
-  # Data: https://github.com/mesonbuild/wrapdb/pull/1772#issuecomment-2466273083
-  #
+  # Disable legacy v1 patch URLs.
   location /v1-static/ {
-    root /var/www/;
-
-    # v1 project list (json)
-    location = /v1-static/-/projects {
-      types { }
-      default_type application/json;
-    }
-
-    # v1 project info (json)
-    location /v1-static/projects/-/ {
-      types { }
-      default_type application/json;
-    }
-
-    # v1 project latest version (json)
-    location /v1-static/query/get_latest/ {
-      types { }
-      default_type application/json;
-    }
-
-    # v1 get_wrap (text)
-    location ~ /v1-static/projects/[^/]+/[^/]+/[^/]+/-/get_wrap$ {
-      types { }
-      default_type "text/plain; charset=utf-8";
-    }
-
-    # v1 wrap file full name alias (text) (bonus addition, not part of the original v1 api)
-    location ~ /v1-static/projects/[^/]+/[^/]+/[^/]+/[^/]+.wrap$ {
-      types { }
-      default_type "text/plain; charset=utf-8";
-    }
-
-    # v1 get_zip (zip)
-    location ~ /v1-static/projects/[^/]+/[^/]+/[^/]+/-/get_zip$ {
-      types { }
-      default_type application/zip;
-      if ( $request_filename ~ "^.*/projects/([^/]+)/([^/]+)/([^/]+)/-/get_zip$" ){
-            set $fname $1-$2-$3-wrap.zip;
-            add_header Content-Disposition 'attachment; filename=$fname';
-        }
-    }
-
-    # v1 zip file full name alias (zip) (bonus addition, not part of the original v1 api)
-    location ~ /v1-static/projects/[^/]+/[^/]+/[^/]+/[^/]+.zip$ {
-      types { }
-      default_type application/zip;
-    }
+    return 501;
   }
 
+  # REPLACE WITH <CUSTOM_DOMAIN>
   server_name wrapdb.mesonbuild.com;
 
   listen [::]:443 ssl ipv6only=on; # managed by Certbot
   listen 443 ssl; # managed by Certbot
+
+  # replace with yout ssl setup for <CUSTOM_DOMAIN>
   ssl_certificate /etc/letsencrypt/live/wrapdb.mesonbuild.com/fullchain.pem; # managed by Certbot
   ssl_certificate_key /etc/letsencrypt/live/wrapdb.mesonbuild.com/privkey.pem; # managed by Certbot
   include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
@@ -130,6 +56,7 @@ server {
 }
 
 server {
+  # replace with <CUSTOM_DOMAIN>
   server_name wrapdb.mesonbuild.com;
   listen 80;
   listen [::]:80;

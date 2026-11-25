@@ -16,7 +16,7 @@ from urllib.request import urlopen
 def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
     url = urlopen(f"https://{hostname}/v2/releases.json")
     releases = json.loads(url.read().decode())
-    with open(output_dir / "wrapdb-table.md", "w", encoding="utf-8") as f:
+    with open(output_dir / "table.html", "w", encoding="utf-8") as f:
         f.write("| Project | Versions | Provided dependencies | Provided programs |\n")
         f.write("| ------- | -------- | --------------------- | ----------------- |\n")
         for name, info in releases.items():
@@ -43,10 +43,10 @@ def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate meson docs")
+    parser = argparse.ArgumentParser(description="Generate wrapdb static website")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--hostname", required=True)
 
     args = parser.parse_args()
 
-    generate_wrapdb_table(output_dir=args.output_dir, hostname=args.hostname)
+    generate_wrapdb_table(output_dir=Path(args.output_dir), hostname=args.hostname)

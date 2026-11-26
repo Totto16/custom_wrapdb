@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 import argparse
+import os
 import shutil
 import hashlib
 import requests
@@ -227,7 +228,11 @@ def generate_frontend(site: Path, wrapdb_host: str) -> None:
         for file in files:
             global_file = root / file
             file_dest = site / global_file.relative_to(out_dir)
-            global_file.copy(file_dest)
+            if hasattr(global_file, "copy"):
+                global_file.copy(file_dest)
+            else:
+                import shutil
+                shutil.copyfile(global_file, file_dest)
 
 
 

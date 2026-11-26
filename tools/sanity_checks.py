@@ -30,7 +30,7 @@ import shutil
 import tarfile
 import textwrap
 import zipfile
-from typing import Optional
+from typing import Any, Optional
 import dataclasses
 
 from pathlib import Path
@@ -62,13 +62,21 @@ class RepoCfg:
 REPO_CFG: Optional[RepoCfg] = None
 
 
+class Theme:
+    warn: str
+    reset: str
+
+    def __init__(self) -> None:
+        self.warn = ""
+        self.reset = ""
+
 class IgnoreCertainErrorsResult(unittest.TextTestResult):
 
     def __init__(self, stream, descriptions, verbosity, **kwargs) -> None:
         super(IgnoreCertainErrorsResult, self).__init__(stream, descriptions, verbosity, **kwargs)
         ci_sanity_check_allow_step_failures = os.getenv("CI_SANITY_CHECK_ALLOW_STEP_FAILURES")
         self.allow_failures = ci_sanity_check_allow_step_failures.split(",") if ci_sanity_check_allow_step_failures is not None else None
-        self._theme = self._theme #type: ignore[has-type]
+        self._theme: Theme = self._theme if hasattr(self, "_theme") else Theme()
 
 
     def _should_ignore_result(self, test, exc_type, exc_value)->bool:

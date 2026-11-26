@@ -74,13 +74,12 @@ class TestReleases(unittest.TestCase):
     timeout_multiplier: float
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
 
         # Take list of git tags.  Ignore tags unreachable from HEAD so we
         # don't fail on tags created after the branch was pushed.
         stdout = subprocess.check_output(['git', 'tag', '--merged'])
         cls.tags = {t.strip() for t in stdout.decode().splitlines()}
-
 
         is_shallow: bool
         if REPO_CFG is None:

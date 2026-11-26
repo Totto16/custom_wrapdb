@@ -17,28 +17,37 @@
 from __future__ import annotations
 from pathlib import Path
 import subprocess
-
+import sys
 from utils import Releases, format_meson, format_wrap, read_wrap
 
 FORMAT_FILES = {'meson.build', 'meson_options.txt', 'meson.options'}
 
-def main() -> None:
+def main() -> int:
     releases = Releases.load()
     tags = set(subprocess.check_output(['git', 'tag', '--merged'], text=True).splitlines())
 
     files = []
+    failed = 0
     for name, info in releases.items():
         if f'{name}_{info["versions"][0]}' not in tags:
             format_wrap(name)
             config = read_wrap(name)
-            patch_dir_name = config['wrap-file'].get('patch_directory')
+            wrap_file = config['wrap-file'] if config.has_section('wrap-file') else None
+            if wrap_file is None:
+                failed += 1
+                print(f"WARNING: Can't determine files from non 'wrap-file' wrap file {name}", file=sys.stderr)
+                continue
+
+            patch_dir_name = wrap_file.get('patch_directory')
             if patch_dir_name:
                 patch_dir = Path('subprojects', 'packagefiles', patch_dir_name)
                 files += [f for f in patch_dir.rglob('*') if f.name in FORMAT_FILES]
 
     format_meson(files)
     Releases.format()
+    return failed
 
 
 if __name__ == '__main__':
-    main()
+    failed = main()
+    sys.exit(1 if failed > 0 else 0)

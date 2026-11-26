@@ -152,7 +152,7 @@ jobs:
 
       - name: Sanity Checks
         run: |
-          ./tools/internalize_sources.py rewrite
+          ./tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           ./tools/fake_tty.py ./tools/sanity_checks.py
 
       - name: Report Meson version dependencies
@@ -234,7 +234,7 @@ jobs:
               export TEST_TIMEOUT_MULTIPLIER=10
               echo "CPU emulation detected; increasing test timeouts by ${TEST_TIMEOUT_MULTIPLIER}x"
           fi
-          ./tools/internalize_sources.py rewrite
+          ./tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           ./tools/fake_tty.py ./tools/sanity_checks.py
         shell: alpine.sh {0}
 
@@ -285,7 +285,7 @@ jobs:
 
       - name: Sanity Checks
         run: |
-          python tools/internalize_sources.py rewrite
+          python tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           python tools/sanity_checks.py
 
   VisualStudio-clang-cl:
@@ -328,7 +328,7 @@ jobs:
           CC: clang-cl
           CXX: clang-cl
         run: |
-          python tools/internalize_sources.py rewrite
+          python tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           python tools/sanity_checks.py
 
   MSYS2:
@@ -386,7 +386,7 @@ jobs:
       - name: Sanity Checks
         shell: msys2 {0}
         run: |
-          python tools/internalize_sources.py rewrite
+          python tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           python tools/sanity_checks.py
 
   MacOS:
@@ -429,5 +429,5 @@ jobs:
 
       - name: Sanity Checks
         run: |
-          ./tools/internalize_sources.py rewrite
+          ./tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           ./tools/fake_tty.py ./tools/sanity_checks.py

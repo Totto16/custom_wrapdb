@@ -47,6 +47,7 @@ MIT_LICENSE_BLOCKS: set[str] = set()
 FORMAT_CHECK_FILES: set[str]= {'meson.build', 'meson_options.txt', 'meson.options'}
 SUBPROJECTS_METADATA_FILES: set[str] = {'subprojects/.gitignore'}
 PERMITTED_KEYS: set[str]= {'versions', 'dependency_names', 'program_names'}
+PERMITTED_SPECIAL_KEYS: set[str] = {"$meta", "$schema"}
 IGNORE_SETUP_WARNINGS = None  # or re.compile(r'something')
 
 
@@ -215,6 +216,10 @@ class TestReleases(unittest.TestCase):
             self.assertIn(version, self.releases[name]['versions'], f'for {name}')
 
         for name, info in self.releases.items():
+            # check $schema, $meta and similar
+            if name.startswith("$"):
+                self.assertIn(name, PERMITTED_SPECIAL_KEYS)
+
             for k in info.keys():
                 self.assertIn(k, PERMITTED_KEYS)
 
@@ -264,6 +269,10 @@ class TestReleases(unittest.TestCase):
     def test_releases(self) -> None:
         has_new_releases = False
         for name, info in self.releases.items():
+            # skip $schema, $meta and similar
+            if name.startswith("$"):
+                continue
+
             with self.subTest(name=name):
                 # We do extra checks in the case a new release is being made. This
                 # is because some wraps are not passing all tests but we force making
@@ -401,6 +410,10 @@ class TestReleases(unittest.TestCase):
         failed = []
         errored = []
         for name, info in self.releases.items():
+            # skip $schema, $meta and similar
+            if name.startswith("$"):
+                continue
+
             if name in self.ci_config.broken:
                 skipped.append(name)
                 continue
@@ -785,6 +798,10 @@ class TestReleases(unittest.TestCase):
     @unittest.skipUnless('TEST_MESON_VERSION_DEPS' in os.environ, 'Run manually only')
     def test_meson_version_deps(self) -> None:
         for name, info in self.releases.items():
+            # skip $schema, $meta and similar
+            if name.startswith("$"):
+                continue
+
             with self.subTest(name=name):
                 if f'{name}_{info["versions"][0]}' not in self.tags:
                     self.report_meson_version_deps(name)

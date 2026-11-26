@@ -32,6 +32,10 @@ class Internalizer:
         self.download = []
         self.rewrite = {}
         for name, info in releases.items():
+            # skip $schema, $meta and similar
+            if name.startswith("$"):
+                continue
+
             tag = f'{name}_{info["versions"][0]}'
             if all or tag not in tags:
                 self.download.append(name)

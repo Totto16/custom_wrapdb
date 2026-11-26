@@ -279,6 +279,10 @@ def run(repo: str, wrapdb_host_opt: T.Optional[str], token: T.Optional[str], all
     stdout = subprocess.check_output(['git', 'tag'])
     tags = [t.strip() for t in stdout.decode().splitlines()]
     for name, info in releases.items():
+        # skip $schema, $meta and similar
+        if name.startswith("$"):
+            continue
+
         versions = info['versions']
         latest_tag = f'{name}_{versions[0]}'
         if latest_tag not in tags:

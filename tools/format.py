@@ -29,6 +29,10 @@ def main() -> int:
     files = []
     failed = 0
     for name, info in releases.items():
+        # skip $schema, $meta and similar
+        if name.startswith("$"):
+            continue
+
         if f'{name}_{info["versions"][0]}' not in tags:
             format_wrap(name)
             config = read_wrap(name)

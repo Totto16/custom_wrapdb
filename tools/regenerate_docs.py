@@ -54,6 +54,9 @@ def generate_wrapdb_table(output_dir: Path, wrapdb_host_opt: Optional[str],allow
             '<tr class="table-header"> <th class="proj">Project</th> <th class="version">Versions</th> <th class="deps">Provided dependencies</th> <th class="programs">Provided programs</th> </tr>\n'
         )
         for name, info in releases.items():
+            # skip $schema, $meta and similar
+            if name.startswith("$"):
+                continue
 
             name_str = f'<div class="wrap-name" filter-data="{name}">{name}</div>'
 

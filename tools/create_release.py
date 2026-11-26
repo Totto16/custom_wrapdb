@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 import argparse
-import os
 import shutil
 import hashlib
 import requests
@@ -244,6 +243,16 @@ def generate_site(releases: Releases, wrapdb_host: str,allow_docs_for_other_repo
 
     wrapdb = site / "wrapdb"
     wrapdb.mkdir()
+
+    # sanitize releases
+    to_del: list[str] = []
+    for k, _n in releases.items():
+        # skip $schema, $meta and similar
+        if k.startswith("$"):
+            to_del.append(k)
+
+    for to_d in to_del:
+        del releases[to_d]
 
     releases.save(dir=wrapdb, compact=True)
 

@@ -36,7 +36,7 @@ jobs:
       - name: Upload release assets
         run: |
           ./tools/create_release.py --repo ${{ github.repository }} --wrapdb-host ${{ vars.WRAPDB_HOST }} --token ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload releases.json
+      - name: Upload static website
         uses: actions/upload-pages-artifact@v5
 
   update_index:
@@ -47,46 +47,8 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}releases.json
+      url: ${{ steps.deploy.outputs.page_url }}Wrapdb-projects.html
     steps:
-      - name: Deploy releases.json
+      - name: Deploy static website
         id: deploy
         uses: actions/deploy-pages@v5
-
-  # Ideally we should trigger Meson's CI to update the website, but unfortunately
-  # it requires a Personal Access Token. Instead clone meson and do it ourself.
-  # This job is copied from Meson's workflows.
-  update_website:
-    # the site builder reads releases.json, so update that first
-    needs: update_index
-    env:
-      HAS_SSH_KEY: ${{ secrets.WEBSITE_PRIV_KEY != '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install package
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install python3-pip ninja-build libjson-glib-dev
-          python3 -m pip install hotdoc chevron strictyaml
-      - name: Setup SSH Keys and known_hosts
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.WEBSITE_PRIV_KEY }}"
-        if: env.HAS_SSH_KEY == 'true'
-      - name: Build website
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git clone https://github.com/mesonbuild/meson.git
-          cd meson/docs
-          ../meson.py setup _build
-          ninja -C _build
-      - name: Update website
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          cd meson/docs
-          ninja -C _build upload
-        if: env.HAS_SSH_KEY == 'true'

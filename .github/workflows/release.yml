@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload release assets
         run: |
-          ./tools/create_release.py --repo ${{ github.repository }} --wrapdb-host ${{ vars.WRAPDB_HOST }} --token ${{ secrets.GITHUB_TOKEN }}
+          ./tools/create_release.py --repo ${{ github.repository }} --token ${{ secrets.GITHUB_TOKEN }}
       - name: Upload static website
         uses: actions/upload-pages-artifact@v5
 

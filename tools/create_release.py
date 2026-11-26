@@ -195,10 +195,10 @@ class CreateRelease:
         response.raise_for_status()
         print('Published release:', self.upload_url)
 
-def generate_frontend(site: Path, wrapdb_host: str) -> None:
+def generate_frontend(site: Path, wrapdb_host: str, allow_docs_for_other_repo: bool) -> None:
     with tempfile.TemporaryDirectory() as tempdir:
         subprocess.check_call(
-            ['python', 'tools/regenerate_docs.py', '--output-dir', tempdir, '--wrapdb-host', wrapdb_host]
+            ['python', 'tools/regenerate_docs.py', '--output-dir', tempdir, '--wrapdb-host', wrapdb_host] + (["--allow-docs-for-other-repo"] if allow_docs_for_other_repo else [])
         )
 
         table_html = Path(tempdir) / "table.html"
@@ -236,7 +236,7 @@ def generate_frontend(site: Path, wrapdb_host: str) -> None:
 
 
 
-def generate_site(releases: Releases, wrapdb_host: str) -> None:
+def generate_site(releases: Releases, wrapdb_host: str,allow_docs_for_other_repo: bool) -> None:
     site = Path('_site')  # default path for actions/upload-pages-artifact
     if site.exists():
         shutil.rmtree(site)
@@ -247,26 +247,54 @@ def generate_site(releases: Releases, wrapdb_host: str) -> None:
 
     releases.save(dir=wrapdb, compact=True)
 
-    generate_frontend(site,wrapdb_host)
+    generate_frontend(site, wrapdb_host, allow_docs_for_other_repo)
 
-def run(repo: str, wrapdb_host: str, token: T.Optional[str]) -> None:
+def run(repo: str, wrapdb_host_opt: T.Optional[str], token: T.Optional[str], allow_docs_for_other_repo: bool) -> None:
     releases = Releases.load()
+
+    wrapdb_host: str
+
+    meta = T.cast(T.Optional[T.Any], releases.get("$meta", None))
+    if meta is not None:
+        host: str = meta["host"]
+
+        wrapdb_host = host
+
+        if wrapdb_host_opt is not None:
+            if wrapdb_host_opt != host:
+                if allow_docs_for_other_repo:
+                    ## only generate site for that
+                    generate_site(releases, wrapdb_host_opt, True)
+                    return
+                else:
+                    raise Exception(f"Got two different hosts from the '$meta' field in the releases.json and the cli: {wrapdb_host_opt} vs. {host}")
+
+    else:
+        if wrapdb_host_opt is None:
+            raise Exception("WrapDB host not given as cli arg and not detected based on the releases.json")
+
+        wrapdb_host = wrapdb_host_opt
+
+
     stdout = subprocess.check_output(['git', 'tag'])
     tags = [t.strip() for t in stdout.decode().splitlines()]
     for name, info in releases.items():
         versions = info['versions']
         latest_tag = f'{name}_{versions[0]}'
         if latest_tag not in tags:
-            CreateRelease(repo, wrapdb_host,token, latest_tag)
-    generate_site(releases,wrapdb_host)
+            CreateRelease(repo, wrapdb_host, token, latest_tag)
+    generate_site(releases, wrapdb_host, False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Generate wrapdb static website")
     parser.add_argument("--repo", required=True)
-    parser.add_argument("--wrapdb-host", required=True)
+    parser.add_argument("--wrapdb-host", required=False)
     parser.add_argument("--token", required=False, default=None)
+    parser.add_argument(
+        '-a', '--allow-docs-for-other-repo', action='store_true', default=False,
+    )
 
     args = parser.parse_args()
 
 
-    run(args.repo, args.wrapdb_host,args.token)
+    run(repo=args.repo, wrapdb_host_opt=args.wrapdb_host, token=args.token, allow_docs_for_other_repo=args.allow_docs_for_other_repo)

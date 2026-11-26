@@ -1,4 +1,7 @@
 {
+  "$meta": {
+    "host": "wrap.totto.lt"
+  },
   "trc": {
     "dependency_names": [
       "trc"

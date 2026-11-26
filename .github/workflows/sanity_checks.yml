@@ -400,8 +400,6 @@ jobs:
         include:
           - platform: arm64
             runner: macos-26
-          - platform: x86_64
-            runner: macos-26-intel
     steps:
       - uses: actions/checkout@v7
         with:

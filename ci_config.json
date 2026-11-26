@@ -15,5 +15,12 @@
     "they control; for example glib:tests=false is passed to every project",
     "except glib.  This helps avoid irrelevant CI failures in dependencies."
   ],
-  "global_build_options": []
+  "global_build_options": [],
+  "tstr.h": {
+    "_comment": "Winsows is not supported atm",
+    "build_on": {
+      "windows": false,
+      "msys2": false
+    }
+  }
 }

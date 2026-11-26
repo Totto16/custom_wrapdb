@@ -19,7 +19,8 @@
   "tstr.h": {
     "_comment": "Winsows is not supported atm",
     "build_on": {
-      "windows": false
+      "windows": false,
+      "msys2": false
     }
   }
 }

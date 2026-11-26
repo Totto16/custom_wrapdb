@@ -5,7 +5,7 @@
     --bg-color-2: #cbcbcb;
     --color-2: #0f0d0b;
 
-    --unknown-status: #b1b1b1;
+    --unknown-status: #737272;
     --unavailable-status: #ffa500;
     --online-status: #04be04;
     --offline-status: #f64242;
@@ -27,7 +27,7 @@
         --bg-color-2: #3f3f3f;
         --color-2: #a2a2a2;
 
-        --unknown-status: #808080;
+        --unknown-status: #2d2d2d;
         --unavailable-status: #b87700;
         --online-status: #027502;
         --offline-status: #ff0000;
@@ -143,9 +143,29 @@ tr.table-entry th.deps .deps-div {
     align-items: center;
 }
 
+tr.table-entry th.deps:has(.deps-div.empty-deps) {
+    background-color: var(--unknown-status);
+}
+
+
+tr.table-entry th.deps .deps-div .deps-name {
+    text-align: center;
+}
+
+
 tr.table-entry th.programs .programs-div {
     display: flex;
     flex-direction: column;
     gap: 2px;
     align-items: center;
+}
+
+tr.table-entry th.programs:has(.programs-div.empty-programs) {
+    background-color: var(--unknown-status);
+}
+
+
+
+tr.table-entry th.programs .programs-div .programs-name {
+    text-align: center;
 }

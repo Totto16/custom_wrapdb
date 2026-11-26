@@ -40,11 +40,12 @@ def generate_wrapdb_table(output_dir: Path, wrapdb_host: str) -> None:
             dependency_names = info.get("dependency_names", [])
             dependency_names_str = f'<div class="deps-div"> <div class="deps-name">{'</div> <div class="deps-name">'.join(
                 dependency_names
-            )} </div> </div>'
+            )} </div> </div>' if len(dependency_names) != 0 else '<div class="deps-div empty-deps"> </div>'
             program_names = info.get("program_names", [])
             program_names_str = f'<div class="programs-div"> <div class="programs-name">{'</div> <div class="programs-name">'.join(
                 program_names
-            )} </div> </div>'
+            )} </div> </div>' if len(program_names) != 0 else '<div class="programs-div empty-programs"> </div>'
+
             f.write(f'<tr class="table-entry"> <th class="proj">{name_str}</th> <th class="version">{versions_str}</th> <th class="deps">{dependency_names_str}</th> <th class="programs">{program_names_str}</th> </tr>\n')
 
         f.write('</table>\n')

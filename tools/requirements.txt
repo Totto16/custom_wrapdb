@@ -1,0 +1,6 @@
+mypy>=2.4.1
+requests>=2.34.2
+types-PyYAML>=6.0.12.20261122
+types-requests>=2.33.0.20261030
+typing_extensions>=4.16.0
+license-expression>=30.4.4

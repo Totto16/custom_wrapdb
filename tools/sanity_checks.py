@@ -30,7 +30,7 @@ import shutil
 import tarfile
 import textwrap
 import zipfile
-from typing import Optional
+from typing import Any, Optional
 import dataclasses
 
 from pathlib import Path
@@ -62,6 +62,96 @@ class RepoCfg:
 REPO_CFG: Optional[RepoCfg] = None
 
 
+class Theme:
+    warn: str
+    reset: str
+
+    def __init__(self) -> None:
+        self.warn = ""
+        self.reset = ""
+
+class IgnoreCertainErrorsResult(unittest.TextTestResult):
+
+    def __init__(self, stream, descriptions, verbosity, **kwargs) -> None:
+        super(IgnoreCertainErrorsResult, self).__init__(stream, descriptions, verbosity, **kwargs)
+        ci_sanity_check_allow_step_failures = os.getenv("CI_SANITY_CHECK_ALLOW_STEP_FAILURES")
+        self.allow_failures = ci_sanity_check_allow_step_failures.split(",") if ci_sanity_check_allow_step_failures is not None else None
+        self._theme: Theme = self._theme if hasattr(self, "_theme") else Theme()
+
+
+    def _should_ignore_result(self, test, exc_type, exc_value)->bool:
+        if self.allow_failures is None:
+            return False
+
+        if (isinstance(test, unittest.case._SubTest)): # type: ignore[attr-defined]
+            step = test.params.get("step", None)
+            if step is not None:
+                if step in self.allow_failures:
+                    return True
+
+            return False
+
+        return False
+
+
+
+    def addFailure(self, test, err)->None:
+        if self.allow_failures is None:
+            return super(IgnoreCertainErrorsResult, self).addFailure(test, err)
+
+        exc_type, exc_value, tb = err
+
+        if self._should_ignore_result(test, exc_type, exc_value):
+            if self.showAll:
+                if self.dots:
+                    self.stream.writeln()
+                    self.stream.flush()
+
+                t = self._theme
+                self.stream.writeln(f"{t.warn}WARNING: Ignored failure: {test}{t.reset}")
+            return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)
+
+
+        return super(IgnoreCertainErrorsResult, self).addFailure(test, err)
+
+    def addError(self, test, err) -> None:
+        if self.allow_failures is None:
+            return super(IgnoreCertainErrorsResult, self).addError(test, err)
+
+        exc_type, exc_value, tb = err
+
+        if self._should_ignore_result(test, exc_type, exc_value):
+            if self.showAll:
+                if self.dots:
+                    self.stream.writeln()
+                    self.stream.flush()
+
+                t = self._theme
+                self.stream.writeln(f"{t.warn}WARNING: Ignored error: {test}{t.reset}")
+            return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)
+
+        return super(IgnoreCertainErrorsResult, self).addError(test, err)
+
+    def addSubTest(self, test, subtest, err):
+        if self.allow_failures is None:
+            return super(IgnoreCertainErrorsResult, self).addSubTest(test, subtest, err)
+
+        if err is not None:
+            exc_type, exc_value, tb = err
+
+            if self._should_ignore_result(subtest, exc_type, exc_value):
+                if self.showAll:
+                    if self.dots:
+                        self.stream.writeln()
+                        self.stream.flush()
+
+                    t = self._theme
+                    self.stream.writeln(f"{t.warn}WARNING: Ignored subtest: {subtest}{t.reset}")
+                return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)
+
+        return super(IgnoreCertainErrorsResult, self).addSubTest(test, subtest, err)
+
+
 class TestReleases(unittest.TestCase):
     ci_config: CIConfig
     github_output_vars: Path | None
@@ -74,13 +164,12 @@ class TestReleases(unittest.TestCase):
     timeout_multiplier: float
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
 
         # Take list of git tags.  Ignore tags unreachable from HEAD so we
         # don't fail on tags created after the branch was pushed.
         stdout = subprocess.check_output(['git', 'tag', '--merged'])
         cls.tags = {t.strip() for t in stdout.decode().splitlines()}
-
 
         is_shallow: bool
         if REPO_CFG is None:
@@ -199,7 +288,7 @@ class TestReleases(unittest.TestCase):
                     self.assertIn('source_url', wrap_section)
                     self.assertIn('source_hash', wrap_section)
                     self.assertEqual('meson', wrap_section.get('method', 'meson').strip(),
-                                     'WrapDB only accepts wraps that use the "meson" method for compiling.')
+                                    'WrapDB only accepts wraps that use the "meson" method for compiling.')
 
                 # FIXME: Not all wraps currently comply, only check for wraps we modify.
                 if extra_checks and self.ci_config.get(name, {}).get('has_provides', True):
@@ -293,7 +382,7 @@ class TestReleases(unittest.TestCase):
                             self.check_nonport_source(name, config)
                             with self.subTest(step='obsolete ignore_upstream_meson'):
                                 self.assertIsNone(self.ci_config.get(name, {}).get('ignore_upstream_meson'),
-                                                  "found ignore_upstream_meson in wrap without patch_directory")
+                                                "found ignore_upstream_meson in wrap without patch_directory")
                     else:
                         with self.subTest(step='version is tagged'):
                             self.assertIn(t, self.tags)
@@ -826,4 +915,7 @@ if __name__ == '__main__':
         # Avoid jumbled output…
         sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0), write_through=True)
         sys.stderr = sys.stdout
-    unittest.main(verbosity=2)
+
+    unittest.main(verbosity=2, testRunner=unittest.TextTestRunner(
+        resultclass=IgnoreCertainErrorsResult)
+    )

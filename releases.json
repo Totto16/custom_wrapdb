@@ -1,4 +1,12 @@
 {
+  "trc": {
+    "dependency_names": [
+      "trc"
+    ],
+    "versions": [
+      "1.0.1-1"
+    ]
+  },
   "tstr.h": {
     "dependency_names": [
       "tstr.h"

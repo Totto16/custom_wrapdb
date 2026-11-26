@@ -1,0 +1,8 @@
+[wrap-file]
+directory = trc-1.0.1
+source_url = https://github.com/Totto16/trc/archive/refs/tags/v1.0.1.tar.gz
+source_filename = trc-1.0.1.tar.gz
+source_hash = effe4624260d6e269456f3ab9d6938676cf586498d95a51a8abbbbd7df886ba1
+
+[provide]
+dependency_names = trc

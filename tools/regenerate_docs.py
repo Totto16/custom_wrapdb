@@ -13,40 +13,48 @@ from pathlib import Path
 from urllib.request import urlopen
 
 
-def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
-    url = urlopen(f"https://{hostname}/v2/releases.json")
+def generate_wrapdb_table(output_dir: Path, wrapdb_host: str) -> None:
+    url = urlopen(f"https://{wrapdb_host}/v2/releases.json")
     releases = json.loads(url.read().decode())
     with open(output_dir / "table.html", "w", encoding="utf-8") as f:
-        f.write("| Project | Versions | Provided dependencies | Provided programs |\n")
-        f.write("| ------- | -------- | --------------------- | ----------------- |\n")
+        f.write('<table id="projects">\n')
+        f.write('<tr class="table-header"> <th class="proj">Project</th> <th class="version">Versions</th> <th class="deps">Provided dependencies</th> <th class="programs">Provided programs</th> </tr>\n')
         for name, info in releases.items():
-            versions = []
-            added_tags = set()
+
+            name_str = f'<div class="wrap-name" filter-data="{name}">{name}</div>'
+
+            versions:list[str] = []
+            added_tags:set[str] = set()
             for v in info["versions"]:
                 tag, build = v.rsplit("-", 1)
                 if tag not in added_tags:
                     added_tags.add(tag)
                     versions.append(
-                        f"[{v}](https://wrapdb.mesonbuild.com/v2/{name}_{v}/{name}.wrap)"
+                        f'<a href="https://{wrapdb_host}/v2/{name}_{v}/{name}.wrap" class="wrap-link" filter-data="{v}">{v}</a>'
                     )
             # Highlight latest version.
-            versions_str = f"<big>**{versions[0]}**</big><br/>" + ", ".join(
-                versions[1:]
-            )
-            dependency_names = info.get("dependency_names", [])
-            dependency_names_str = ", ".join(dependency_names)
-            program_names = info.get("program_names", [])
-            program_names_str = ", ".join(program_names)
-            f.write(
-                f"| {name} | {versions_str} | {dependency_names_str} | {program_names_str} |\n"
-            )
+            versions_str = f'<div class="versions-div"> <div class="versions-number">{'</div> <div class="versions-number">'.join(
+                versions
+            )} </div> </div>'
 
+            dependency_names: list[str] = info.get("dependency_names", [])
+            dependency_names_str = f'<div class="deps-div"> {" ".join(
+                [f'<div class="deps-name" filter-data="{dep}">{dep}</div>' for dep in dependency_names]
+                )} </div>' if len(dependency_names) != 0 else '<div class="deps-div empty-deps"> </div>'
+            program_names: list[str] = info.get("program_names", [])
+            program_names_str = f'<div class="programs-div"> {" ".join(
+                [f'<div class="programs-name" filter-data="{program}">{program}</div>' for program in program_names]
+                )} </div>' if len(program_names) != 0 else '<div class="programs-div empty-programs"> </div>'
+
+            f.write(f'<tr class="table-entry"> <th class="proj">{name_str}</th> <th class="version">{versions_str}</th> <th class="deps">{dependency_names_str}</th> <th class="programs">{program_names_str}</th> </tr>\n')
+
+        f.write('</table>\n')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate wrapdb static website")
     parser.add_argument("--output-dir", required=True)
-    parser.add_argument("--hostname", required=True)
+    parser.add_argument("--wrapdb-host", required=True)
 
     args = parser.parse_args()
 
-    generate_wrapdb_table(output_dir=Path(args.output_dir), hostname=args.hostname)
+    generate_wrapdb_table(output_dir=Path(args.output_dir), wrapdb_host=args.wrapdb_host)

@@ -1,0 +1,12 @@
+{
+  "include": [],
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.web.json"
+    },
+    {
+      "path": "./tsconfig.tools.json"
+    }
+  ]
+}

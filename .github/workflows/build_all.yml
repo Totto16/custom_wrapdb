@@ -3,12 +3,12 @@ on:
   workflow_dispatch:
     inputs:
       fatal_warnings:
-        description: 'Build with --fatal-meson-warnings (yes/no)'
-        default: 'no'
+        description: "Build with --fatal-meson-warnings (yes/no)"
+        default: "no"
         required: false
   schedule:
     # Run every Sunday at midnight
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
 
 permissions:
   contents: read
@@ -96,7 +96,7 @@ jobs:
             apk-tools-url: 'https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v3.0.7/x86_64/apk.static#!sha256!c07bf5356eacc9dd7a8c56bc537f46702f007170287403299d52a04264e74b3c'
 
   Ubuntu:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     name: Ubuntu (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude
@@ -128,7 +128,7 @@ jobs:
           ./tools/fake_tty.py ./tools/sanity_checks.py
 
   Alpine:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     name: Alpine (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude
@@ -190,13 +190,13 @@ jobs:
         shell: alpine.sh {0}
 
   VisualStudio:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     runs-on: windows-latest
     needs: prelude
     strategy:
       fail-fast: false
       matrix:
-        platform: ['x64', 'x86']
+        platform: ["x64", "x86"]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -207,8 +207,8 @@ jobs:
         if: matrix.platform == 'x86'
         uses: actions/setup-python@v7
         with:
-          architecture: 'x86'
-          python-version: '3.12'
+          architecture: "x86"
+          python-version: "3.12"
 
       - name: Install packages
         run: |
@@ -231,7 +231,7 @@ jobs:
           python tools/sanity_checks.py
 
   VisualStudio-clang-cl:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     runs-on: windows-latest
     needs: prelude
     env:
@@ -261,13 +261,13 @@ jobs:
           python tools/sanity_checks.py
 
   MSYS2:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     runs-on: windows-latest
     needs: prelude
     strategy:
       fail-fast: false
       matrix:
-        platform: ['UCRT64', 'CLANG64']
+        platform: ["UCRT64", "CLANG64"]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -310,7 +310,7 @@ jobs:
           python tools/sanity_checks.py
 
   MacOS:
-    if: github.event_name != 'schedule' || github.repository == 'Totto16/custom_wrapdb'
+    if: github.event_name != 'schedule' || (vars.ORIGINAL_GITHUB_REPO != '' && github.repository == vars.ORIGINAL_GITHUB_REPO)
     name: MacOS (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     needs: prelude
@@ -331,7 +331,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install packages
         run: |

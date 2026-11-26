@@ -1,0 +1,206 @@
+:root {
+    --text-color: #000000;
+    --bg-color: #b1b1b1;
+
+    --bg-color-2: #cbcbcb;
+    --color-2: #0f0d0b;
+
+    --unknown-status: #737272;
+    --unavailable-status: #ffa500;
+    --online-status: #04be04;
+    --offline-status: #f64242;
+
+    --link-color-default: #002ee3;
+    --link-color-visited: #9801d6;
+    --link-color-hover: #ee7000;
+    --link-color-active: #e11500;
+    --link-color-focus: #037500;
+
+    --list-entry-bg: #8c8a8a;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #ffffff;
+        --bg-color: #515151;
+
+        --bg-color-2: #3f3f3f;
+        --color-2: #a2a2a2;
+
+        --unknown-status: #2d2d2d;
+        --unavailable-status: #b87700;
+        --online-status: #027502;
+        --offline-status: #ff0000;
+
+        --link-color-default: #3498db;
+        --link-color-visited: #9b59b6;
+        --link-color-hover: #e67e22;
+        --link-color-active: #e74c3c;
+        --link-color-focus: #27ae60;
+
+        --list-entry-bg: #414141;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    /* default */
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+
+#index-see-here {
+    height: 100%;
+    display: flex;
+
+    justify-content: center;
+
+    background-color: var(--bg-color-2);
+
+    margin: 20px;
+    border-radius: 5px;
+}
+
+#index-see-here a {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+a {
+    color: var(--link-color-default);
+}
+
+a:visited {
+    color: var(--link-color-visited);
+}
+
+a:hover {
+    color: var(--link-color-hover);
+}
+
+a:active {
+    color: var(--link-color-active);
+}
+
+a:focus {
+    color: var(--link-color-focus);
+}
+
+#wrapper {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+
+#search-space {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+#search {
+    padding: 10px;
+    border: 1px solid var(--color-2);
+    border-radius: 5px;
+
+    width: max(40vw, 300px)
+}
+
+
+input[type="text"] {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+
+}
+
+#table-wrapper {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+th,
+td {
+    border: 2px solid var(--color-2);
+    padding: 10px;
+    text-align: left;
+}
+
+
+#projects {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+tr.table-header {
+    font-family: bold;
+}
+
+tr.table-header th {
+    text-align: center;
+    color: var(--color-2);
+}
+
+tr.table-entry {
+    width: 50%;
+    align-self: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+tr.table-entry th.proj div {
+    text-align: center;
+}
+
+tr.table-entry th.version .versions-div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+tr.table-entry th.deps .deps-div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+tr.table-entry th.deps:has(.deps-div.empty-deps) {
+    background-color: var(--unknown-status);
+}
+
+
+tr.table-entry th.deps .deps-div .deps-name {
+    text-align: center;
+}
+
+
+tr.table-entry th.programs .programs-div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+tr.table-entry th.programs:has(.programs-div.empty-programs) {
+    background-color: var(--unknown-status);
+}
+
+
+
+tr.table-entry th.programs .programs-div .programs-name {
+    text-align: center;
+}

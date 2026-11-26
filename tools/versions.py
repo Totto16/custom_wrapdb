@@ -20,7 +20,6 @@ from functools import cache
 from hashlib import sha256
 from itertools import count
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -33,15 +32,10 @@ import requests
 from utils import Releases, read_wrap, wrap_path
 
 WRAP_URL_TEMPLATE = (
-    'https://github.com/mesonbuild/wrapdb/blob/master/subprojects/{0}.wrap'
+    'https://github.com/{0}/blob/master/subprojects/{1}.wrap'
 )
 # wraps that exist but whose versions should not be reported or updated
-DEPRECATED_WRAPS = set([
-    # replaced with nlohmann_json
-    'json',
-    # replaced with doctest
-    'onqtam-doctest'
-])
+DEPRECATED_WRAPS: set[str] = set([])
 
 
 class AnityaPackageList(T.TypedDict):
@@ -371,7 +365,7 @@ def do_list(args: Namespace) -> None:
         print('| --- | --- | --- | --- |')
         for name in wraps:
             typ = ':construction:' if name in ports else ':bank:'
-            fname = f'[{name}]({WRAP_URL_TEMPLATE.format(name)})'
+            fname = f'[{name}]({WRAP_URL_TEMPLATE.format(args.repo, name)})'
             if name not in upstream_vers:
                 upstream_ver = '_unknown_'
             elif cur_vers[name] != upstream_vers[name]:
@@ -449,6 +443,14 @@ def main() -> None:
         help='list wraps and their versions',
         description='List wraps and their versions.',
     )
+    list.add_argument(
+            '-r', '--repo',
+            help='repo to use',
+            required=True,
+        )
+    list.add_argument(
+            'names', metavar='name', nargs='*', help='wrap to check'
+        )
     list.add_argument(
         'names', metavar='name', nargs='*', help='wrap to check'
     )

@@ -63,12 +63,12 @@ class Internalizer:
         else:
             Path('subprojects', 'packagecache').mkdir(exist_ok=True)
 
-    def rewrite_wraps(self) -> None:
+    def rewrite_wraps(self, repo: str) -> None:
         for name, tag in self.rewrite.items():
             wrap = read_wrap(name)
             wf = wrap['wrap-file']
             wf['source_fallback_url'] = wf['source_url']
-            wf['source_url'] = f'https://github.com/mesonbuild/wrapdb/releases/download/{tag}/{wf["source_filename"]}'
+            wf['source_url'] = f'https://github.com/{repo}/releases/download/{tag}/{wf["source_filename"]}'
             write_wrap(wrap_path(name), wrap)
         print(f'Rewrote source_url for {len(self.rewrite)} projects.')
 
@@ -100,6 +100,11 @@ def main() -> None:
         help='redirect unmodified wraps to WrapDB GitHub releases'
     )
     rewrite.set_defaults(op='rewrite')
+    rewrite.add_argument(
+        '-r', '--repo',
+        help='repo to use',
+        required=True,
+    )
 
     args = parser.parse_args()
     intern = Internalizer(args.all)
@@ -108,7 +113,7 @@ def main() -> None:
     elif args.op == 'download':
         intern.download_sources()
     elif args.op == 'rewrite':
-        intern.rewrite_wraps()
+        intern.rewrite_wraps(args.repo)
 
 
 if __name__ == '__main__':

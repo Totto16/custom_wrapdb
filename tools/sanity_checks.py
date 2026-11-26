@@ -64,10 +64,11 @@ REPO_CFG: Optional[RepoCfg] = None
 
 class IgnoreCertainErrorsResult(unittest.TextTestResult):
 
-    def __init__(self, stream, descriptions, verbosity, *, durations=None) -> None:
-        super(IgnoreCertainErrorsResult, self).__init__(stream, descriptions, verbosity, durations=durations)
+    def __init__(self, stream, descriptions, verbosity, **kwargs) -> None:
+        super(IgnoreCertainErrorsResult, self).__init__(stream, descriptions, verbosity, **kwargs)
         ci_sanity_check_allow_step_failures = os.getenv("CI_SANITY_CHECK_ALLOW_STEP_FAILURES")
         self.allow_failures = ci_sanity_check_allow_step_failures.split(",") if ci_sanity_check_allow_step_failures is not None else None
+        self._theme = self._theme #type: ignore[has-type]
 
 
     def _should_ignore_result(self, test, exc_type, exc_value)->bool:
@@ -94,6 +95,10 @@ class IgnoreCertainErrorsResult(unittest.TextTestResult):
 
         if self._should_ignore_result(test, exc_type, exc_value):
             if self.showAll:
+                if self.dots:
+                    self.stream.writeln()
+                    self.stream.flush()
+
                 t = self._theme
                 self.stream.writeln(f"{t.warn}WARNING: Ignored failure: {test}{t.reset}")
             return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)
@@ -109,6 +114,10 @@ class IgnoreCertainErrorsResult(unittest.TextTestResult):
 
         if self._should_ignore_result(test, exc_type, exc_value):
             if self.showAll:
+                if self.dots:
+                    self.stream.writeln()
+                    self.stream.flush()
+
                 t = self._theme
                 self.stream.writeln(f"{t.warn}WARNING: Ignored error: {test}{t.reset}")
             return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)
@@ -124,6 +133,10 @@ class IgnoreCertainErrorsResult(unittest.TextTestResult):
 
             if self._should_ignore_result(subtest, exc_type, exc_value):
                 if self.showAll:
+                    if self.dots:
+                        self.stream.writeln()
+                        self.stream.flush()
+
                     t = self._theme
                     self.stream.writeln(f"{t.warn}WARNING: Ignored subtest: {subtest}{t.reset}")
                 return super(IgnoreCertainErrorsResult, self).addExpectedFailure(test, err)

@@ -5,10 +5,9 @@
     --bg-color-2: #cbcbcb;
     --color-2: #0f0d0b;
 
-    --unknown-status: #737272;
-    --unavailable-status: #ffa500;
-    --online-status: #04be04;
-    --offline-status: #f64242;
+    --empty-deps: #737272;
+    --filter-applied: #04be04;
+    --no-entries: #f64242;
 
     --link-color-default: #002ee3;
     --link-color-visited: #9801d6;
@@ -27,10 +26,9 @@
         --bg-color-2: #3f3f3f;
         --color-2: #a2a2a2;
 
-        --unknown-status: #2d2d2d;
-        --unavailable-status: #b87700;
-        --online-status: #027502;
-        --offline-status: #ff0000;
+        --empty-deps: #2d2d2d;
+        --filter-applied: #027502;
+        --no-entries: #ff0000;
 
         --link-color-default: #3498db;
         --link-color-visited: #9b59b6;
@@ -179,7 +177,7 @@ tr.table-entry td.deps .deps-div {
 }
 
 tr.table-entry td.deps:has(.deps-div.empty-deps) {
-    background-color: var(--unknown-status);
+    background-color: var(--empty-deps);
 }
 
 
@@ -196,7 +194,7 @@ tr.table-entry td.programs .programs-div {
 }
 
 tr.table-entry td.programs:has(.programs-div.empty-programs) {
-    background-color: var(--unknown-status);
+    background-color: var(--empty-deps);
 }
 
 
@@ -207,9 +205,15 @@ tr.table-entry td.programs .programs-div .programs-name {
 
 
 tr.no-entries {
-    background-color: var(--offline-status);
+    background-color: var(--no-entries);
 }
 
 tr.no-entries .no-entries-div {
     text-align: center;
+}
+
+
+
+tr.table-entry td[filter="on"] {
+    background-color: var(--filter-applied);
 }

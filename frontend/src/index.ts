@@ -1,23 +1,46 @@
+interface FilterValidResult {
+  valid: boolean;
+  maps: Array<boolean>;
+}
+
 class Filter {
-  private entries: string[];
+  private entries: Array<string[]>;
+  private amount: number;
 
-  constructor() {
-    this.entries = [];
+  constructor(amount: number) {
+    this.entries = new Array(amount).fill(undefined).map((_a) => []);
+    this.amount = amount;
   }
 
-  add(value: string): void {
-    this.entries.push(value);
+  add(index: number, value: string): void {
+    if (index < 0 || index >= this.amount) {
+      throw new Error("Index out of bounds");
+    }
+    this.entries[index]!.push(value);
   }
 
-  isValid(value: string): boolean {
-    console.log(this.entries);
-    for (const entry of this.entries) {
-      if (entry.includes(value)) {
-        return true;
+  isValid(value: string): FilterValidResult {
+    const result: FilterValidResult = {
+      valid: false,
+      maps: new Array(this.amount).fill(undefined).map((_a) => false),
+    };
+
+    if (value == "") {
+      result.valid = true;
+      return result;
+    }
+
+    for (let i = 0; i < this.amount; ++i) {
+      inner: for (const entry of this.entries[i]!) {
+        if (entry.includes(value)) {
+          result.valid = true;
+          result.maps[i] = true;
+          break inner;
+        }
       }
     }
 
-    return false;
+    return result;
   }
 }
 
@@ -25,8 +48,8 @@ interface FilterList {
   filters: Array<Filter>;
 }
 
-function getRows(): NodeListOf<HTMLElement> {
-  return document.querySelectorAll<HTMLElement>(
+function getRows(): NodeListOf<HTMLTableRowElement> {
+  return document.querySelectorAll<HTMLTableRowElement>(
     "#projects tbody tr.table-entry",
   );
 }
@@ -34,36 +57,53 @@ function getRows(): NodeListOf<HTMLElement> {
 function getFilterList(): FilterList {
   const rows = getRows();
   const list: FilterList = {
-    filters: new Array(rows.length).map((_a) => new Filter()),
+    filters: new Array(rows.length).fill(undefined).map((_a) => new Filter(0)),
   };
 
   rows.forEach((row, idx) => {
-    list.filters[idx] = new Filter();
+    list.filters[idx] = new Filter(4);
 
-    const children: Array<ChildNode> = [row];
+    const rowData = Array.from(
+      row.querySelectorAll<HTMLTableCellElement>("td"),
+    );
 
-    while (children.length != 0) {
-      const child = children.pop()!;
+    if (rowData.length != 4) {
+      throw new Error("Invalid row");
+    }
 
-      if (child.nodeType == Node.TEXT_NODE) {
-        continue;
-      }
+    for (let i = 0; i < 4; ++i) {
+      const children: Array<ChildNode> = [rowData[i]!];
 
-      if (child.nodeType == Node.ELEMENT_NODE) {
-        if (child instanceof HTMLElement) {
-          const filter_data = child.attributes.getNamedItem("filter-data");
+      while (children.length != 0) {
+        const child = children.pop()!;
 
-          if (filter_data != null) {
-            list.filters[idx].add(filter_data.value);
+        if (child.nodeType == Node.TEXT_NODE) {
+          continue;
+        }
+
+        if (child.nodeType == Node.ELEMENT_NODE) {
+          if (child instanceof HTMLElement) {
+            const filter_data = child.attributes.getNamedItem("filter-data");
+
+            if (filter_data != null) {
+              list.filters[idx].add(i, filter_data.value);
+            }
           }
         }
-      }
 
-      children.push(...Array.from(child.childNodes));
+        children.push(...Array.from(child.childNodes));
+      }
     }
   });
 
   return list;
+}
+
+function getAttribute(name: string, value: string): Attr {
+  const attr = document.createAttribute(name);
+  attr.value = value;
+
+  return attr;
 }
 
 function searchChanged(
@@ -79,9 +119,27 @@ function searchChanged(
     rows.forEach((row, idx) => {
       const filters = filterList.filters[idx]!;
 
-      if (filters.isValid(filter)) {
+      const validResult = filters.isValid(filter);
+
+      if (validResult.valid) {
         shown++;
         row.style.display = "";
+
+        const rowData = Array.from(
+          row.querySelectorAll<HTMLTableCellElement>("td"),
+        );
+
+        if (rowData.length != 4) {
+          throw new Error("Invalid row");
+        }
+
+        rowData.forEach((rowData, idx) => {
+          if (validResult.maps[idx]) {
+            rowData.attributes.setNamedItem(getAttribute("filter", "on"));
+          } else {
+            rowData.attributes.setNamedItem(getAttribute("filter", "off"));
+          }
+        });
       } else {
         row.style.display = "none";
       }

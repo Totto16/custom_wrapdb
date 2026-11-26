@@ -31,8 +31,12 @@ jobs:
 
       - name: Install packages
         run: |
-          python3 -m pip install license-expression PyYAML
+          python3 -m pip install -r tools/requirements.txt
           python3 -m pip install --pre meson
+
+      - name: Run mypy on tools
+        run: |
+          python3 -m mypy ./tools/
 
       - name: Calculate cache key
         id: cache-key

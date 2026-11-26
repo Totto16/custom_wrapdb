@@ -31,7 +31,9 @@ jobs:
           fetch-depth: 0
 
       - name: Install packages
-        run: python3 -m pip install PyYAML git+https://github.com/mesonbuild/meson
+        run: |
+          python3 -m pip install -r tools/requirements.txt
+          python3 -m pip install git+https://github.com/mesonbuild/meson
 
       - name: Calculate cache key
         id: cache-key

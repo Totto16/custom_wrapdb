@@ -160,47 +160,56 @@ tr.table-entry {
     margin: 5px;
 }
 
-tr.table-entry th.proj div {
+tr.table-entry td.proj div {
     text-align: center;
 }
 
-tr.table-entry th.version .versions-div {
+tr.table-entry td.version .versions-div {
     display: flex;
     flex-direction: column;
     gap: 2px;
     align-items: center;
 }
 
-tr.table-entry th.deps .deps-div {
+tr.table-entry td.deps .deps-div {
     display: flex;
     flex-direction: column;
     gap: 2px;
     align-items: center;
 }
 
-tr.table-entry th.deps:has(.deps-div.empty-deps) {
+tr.table-entry td.deps:has(.deps-div.empty-deps) {
     background-color: var(--unknown-status);
 }
 
 
-tr.table-entry th.deps .deps-div .deps-name {
+tr.table-entry td.deps .deps-div .deps-name {
     text-align: center;
 }
 
 
-tr.table-entry th.programs .programs-div {
+tr.table-entry td.programs .programs-div {
     display: flex;
     flex-direction: column;
     gap: 2px;
     align-items: center;
 }
 
-tr.table-entry th.programs:has(.programs-div.empty-programs) {
+tr.table-entry td.programs:has(.programs-div.empty-programs) {
     background-color: var(--unknown-status);
 }
 
 
 
-tr.table-entry th.programs .programs-div .programs-name {
+tr.table-entry td.programs .programs-div .programs-name {
+    text-align: center;
+}
+
+
+tr.no-entries {
+    background-color: var(--offline-status);
+}
+
+tr.no-entries .no-entries-div {
     text-align: center;
 }

@@ -52,8 +52,9 @@ def generate_wrapdb_table(output_dir: Path, wrapdb_host: str) -> None:
                 [f'<div class="programs-name" filter-data="{program}">{program}</div>' for program in program_names]
                 )} </div>' if len(program_names) != 0 else '<div class="programs-div empty-programs"> </div>'
 
-            f.write(f'<tr class="table-entry"> <th class="proj">{name_str}</th> <th class="version">{versions_str}</th> <th class="deps">{dependency_names_str}</th> <th class="programs">{program_names_str}</th> </tr>\n')
+            f.write(f'<tr class="table-entry"> <td class="proj">{name_str}</td> <td class="version">{versions_str}</td> <td class="deps">{dependency_names_str}</td> <td class="programs">{program_names_str}</td> </tr>\n')
 
+        f.write('<tr class="no-entries" style="display: none;"> <td class="entries" colspan="4"> <div class="no-entries-div">No entries found</div> </td> </tr>\n')
         f.write('</table>\n')
 
 if __name__ == "__main__":

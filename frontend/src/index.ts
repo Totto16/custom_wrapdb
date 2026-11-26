@@ -26,7 +26,9 @@ interface FilterList {
 }
 
 function getRows(): NodeListOf<HTMLElement> {
-  return document.querySelectorAll<HTMLElement>("#projects tbody tr");
+  return document.querySelectorAll<HTMLElement>(
+    "#projects tbody tr.table-entry",
+  );
 }
 
 function getFilterList(): FilterList {
@@ -72,15 +74,29 @@ function searchChanged(
 
     const rows = getRows();
 
+    let shown = 0;
+
     rows.forEach((row, idx) => {
       const filters = filterList.filters[idx]!;
 
       if (filters.isValid(filter)) {
+        shown++;
         row.style.display = "";
       } else {
         row.style.display = "none";
       }
     });
+
+    const noElementsFound = document.querySelector<HTMLElement>(
+      "#projects tbody tr.no-entries",
+    );
+    if (noElementsFound) {
+      if (shown == 0) {
+        noElementsFound.style.display = "";
+      } else {
+        noElementsFound.style.display = "none";
+      }
+    }
   };
 }
 

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2025",
+    "types": [
+      "node"
+    ],
+    "sourceMap": false,
+    "declaration": false,
+    "declarationMap": false,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "strict": true,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "lib": [
+      "ES2025",
+    ],
+    "rootDir": "tools",
+    "outDir": "dist_tools",
+  },
+  "include": [
+    "tools"
+  ],
+  "exclude": [
+    "out",
+    "dist",
+    "dist_tools",
+    "src",
+    "node_modules"
+  ],
+}

@@ -194,12 +194,34 @@ class CreateRelease:
         response.raise_for_status()
         print('Published release:', self.upload_url)
 
-def generate_site(releases: Releases) -> None:
+def generate_frontend(site: Path, wrapdb_host: str) -> None:
+    with tempfile.TemporaryDirectory() as tempdir:
+        subprocess.check_call(
+            ['python', 'tools/regenerate_docs.py', '--output-dir', tempdir, '--wrapdb-host', wrapdb_host]
+        )
+
+        table_html = Path(tempdir) / "table.html"
+
+        subprocess.check_call(
+                ['pnpm', '-C', './frontend', 'exec', 'tsc', '-P', './tsconfig.tools.json']
+            )
+
+        subprocess.check_call(
+                ['node', './frontend/dist_tools/generate_html.js', table_html]
+            )
+
+def generate_site(releases: Releases, wrapdb_host: str) -> None:
     site = Path('_site')  # default path for actions/upload-pages-artifact
     if site.exists():
         shutil.rmtree(site)
     site.mkdir()
-    releases.save(dir=site, compact=True)
+
+    wrapdb = site / "wrapdb"
+    wrapdb.mkdir()
+
+    releases.save(dir=wrapdb, compact=True)
+
+    generate_frontend(site,wrapdb_host)
 
 def run(repo: str, wrapdb_host: str, token: T.Optional[str]) -> None:
     releases = Releases.load()
@@ -210,7 +232,7 @@ def run(repo: str, wrapdb_host: str, token: T.Optional[str]) -> None:
         latest_tag = f'{name}_{versions[0]}'
         if latest_tag not in tags:
             CreateRelease(repo, wrapdb_host,token, latest_tag)
-    generate_site(releases)
+    generate_site(releases,wrapdb_host)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Generate wrapdb static website")

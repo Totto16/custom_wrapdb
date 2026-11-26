@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "module": "es2020",
+    "target": "es2020",
+    "types": [],
+    "sourceMap": false,
+    "declaration": false,
+    "declarationMap": false,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "noImplicitAny": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "rootDir": "src",
+    "outDir": "dist",
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "out",
+    "dist",
+    "node_modules",
+    "tools",
+    "dist_tools"
+  ],
+  "watchOptions": {
+    "excludeDirectories": [
+      "out",
+      "dist",
+      "node_modules",
+      "tools",
+      "dist_tools"
+    ],
+    "excludeFiles": [
+      "out"
+    ]
+  }
+}

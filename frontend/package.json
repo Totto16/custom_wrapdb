@@ -1,0 +1,27 @@
+{
+  "name": "wrapdb-custom-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "scripts": {
+    "compile": "tsc",
+    "move": "rimraf out/* && copyfiles -u 1 'static/**/*' './out/' && copyfiles -u 1 'dist/**/*' './out/js/'",
+    "move:dev": "pnpm run move && copyfiles -u 1 'mock/**/*' './out/'",
+    "build": "pnpm run compile && pnpm run move",
+    "serve": "http-server './out/' -c-1 ",
+    "compile:watch": "tsc-watch --onSuccess \"pnpm run move:dev\"",
+    "dev": "concurrently \"pnpm run compile:watch\" \"pnpm run serve\""
+  },
+  "packageManager": "pnpm@12.23.0",
+  "devDependencies": {
+    "@types/node": "^26.6.7",
+    "concurrently": "^10.0.7",
+    "copyfiles": "^2.4.1",
+    "http-server": "^14.1.1",
+    "rimraf": "^6.1.4",
+    "tsc-watch": "^7.2.1",
+    "typescript": "^7.0.2"
+  }
+}

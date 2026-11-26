@@ -10,7 +10,10 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message || '', '[ci_force_sanity_checks]') }}
+  cancel-in-progress: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message || '', '[ci_force_build]') }}
+
+env:
+  CI_SANITY_CHECK_ALLOW_STEP_FAILURES: ${{ github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_build]') && 'check_source_url' || '' }}
 
 jobs:
   prelude:
@@ -20,7 +23,7 @@ jobs:
       cache-key: ${{ steps.cache-key.outputs.cache-key }}
       matrix-alpine: ${{ steps.alpine.outputs.matrix }}
       matrix-ubuntu: ${{ steps.ubuntu.outputs.matrix }}
-      need-build: ${{ steps.sanity-checks.outputs.need-build || (github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_sanity_checks]')) }}
+      need-build: ${{ steps.sanity-checks.outputs.need-build || (github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_build]')) }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -57,7 +60,7 @@ jobs:
 
       - name: Quick checks
         id: sanity-checks
-        continue-on-error: ${{ github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_sanity_checks]') }}
+        continue-on-error: ${{ github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_build]') }}
         env:
           TEST_ANNOTATE_CONTEXT: yes
           TEST_SKIP_BUILD: yes
@@ -430,3 +433,21 @@ jobs:
         run: |
           ./tools/internalize_sources.py rewrite --repo ${{ github.repository }}
           ./tools/fake_tty.py ./tools/sanity_checks.py
+
+  forced-sanity-checks-warning:
+    name: Forced sanity checks (manual review required)
+    runs-on: ubuntu-latest
+    needs:
+      - prelude
+      - Ubuntu
+      - Alpine
+      - VisualStudio
+      - VisualStudio-clang-cl
+      - MSYS2
+      - MacOS
+    if: always() && github.event_name == 'push' && contains(github.event.head_commit.message || '', '[ci_force_build]')
+    steps:
+      - name: Require manual review
+        run: |
+          echo "::error::Sanity check builds were forced. Manual review is required before merging."
+          exit 1

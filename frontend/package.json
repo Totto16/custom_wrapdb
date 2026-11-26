@@ -7,7 +7,7 @@
   "type": "commonjs",
   "scripts": {
     "compile": "tsc -P './tsconfig.web.json'",
-    "move": "rimraf out/* && copyfiles -u 1 'static/**/*' './out/' && copyfiles -u 1 'dist/**/*' './out/js/'",
+    "move": "rimraf out/* && copyfiles -u 1 'static/**/*' './out/' && copyfiles -u 1 'dist/**/*' './out/js/' && rimraf out/projects.html",
     "move:dev": "pnpm run move && copyfiles -u 1 'mock/**/*' './out/'",
     "build": "pnpm run compile && pnpm run move",
     "serve": "http-server './out/' -c-1 ",

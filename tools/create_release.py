@@ -203,12 +203,33 @@ def generate_frontend(site: Path, wrapdb_host: str) -> None:
         table_html = Path(tempdir) / "table.html"
 
         subprocess.check_call(
-                ['pnpm', '-C', './frontend', 'exec', 'tsc', '-P', './tsconfig.tools.json']
-            )
+            ['pnpm', '-C', './frontend', 'exec', 'tsc', '-P', './tsconfig.tools.json']
+        )
 
         subprocess.check_call(
-                ['node', './frontend/dist_tools/generate_html.js', table_html]
-            )
+            ['node', './frontend/dist_tools/generate_html.js', table_html]
+        )
+
+    # no more need for the temp directory
+    subprocess.check_call(
+        ['pnpm', '-C', './frontend', 'run', 'build']
+    )
+
+    out_dir = Path("./frontend") / "out"
+
+    for root, dirs, files in out_dir.walk():
+
+        for dir in dirs:
+            global_dir = root / dir
+            dir_to_make = site / global_dir.relative_to(out_dir)
+            dir_to_make.mkdir()
+
+        for file in files:
+            global_file = root / file
+            file_dest = site / global_file.relative_to(out_dir)
+            global_file.copy(file_dest)
+
+
 
 def generate_site(releases: Releases, wrapdb_host: str) -> None:
     site = Path('_site')  # default path for actions/upload-pages-artifact

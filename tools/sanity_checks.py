@@ -30,7 +30,7 @@ import shutil
 import tarfile
 import textwrap
 import zipfile
-from typing import Any, Optional
+from typing import Optional
 import dataclasses
 
 from pathlib import Path
@@ -47,7 +47,7 @@ MIT_LICENSE_BLOCKS: set[str] = set()
 FORMAT_CHECK_FILES: set[str]= {'meson.build', 'meson_options.txt', 'meson.options'}
 SUBPROJECTS_METADATA_FILES: set[str] = {'subprojects/.gitignore'}
 PERMITTED_KEYS: set[str]= {'versions', 'dependency_names', 'program_names'}
-PERMITTED_SPECIAL_KEYS: set[str] = {"$meta", "$schema"}
+PERMITTED_SPECIAL_KEYS: dict[str, Optional[set[str]]] = {"$meta": {"host"}, "$schema": None}
 IGNORE_SETUP_WARNINGS = None  # or re.compile(r'something')
 
 
@@ -218,7 +218,12 @@ class TestReleases(unittest.TestCase):
         for name, info in self.releases.items():
             # check $schema, $meta and similar
             if name.startswith("$"):
-                self.assertIn(name, PERMITTED_SPECIAL_KEYS)
+                self.assertIn(name, PERMITTED_SPECIAL_KEYS.keys())
+                allowed_sub_keys = PERMITTED_SPECIAL_KEYS[name]
+                if allowed_sub_keys is not None:
+                    for k in info.keys():
+                        self.assertIn(k, allowed_sub_keys)
+                continue
 
             for k in info.keys():
                 self.assertIn(k, PERMITTED_KEYS)

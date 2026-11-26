@@ -1,8 +1,8 @@
-[wrap-git]
-directory = trc
-url = https://github.com/Totto16/trc.git
-revision = 8237ae5f74dd57da89cb8c2a05d4b08a826de858
-depth = 1
+[wrap-file]
+directory = trc-8237ae5f74dd57da89cb8c2a05d4b08a826de858
+source_url = https://github.com/Totto16/trc/archive/8237ae5f74dd57da89cb8c2a05d4b08a826de858.tar.gz
+source_filename = trc-8237ae5f74dd57da89cb8c2a05d4b08a826de858.tar.gz
+source_hash = 31ff3a7bb65b12796d5c751604615ca332e4f64daae33cbb201fedd136b413f1
 
 [provide]
 dependency_names = trc

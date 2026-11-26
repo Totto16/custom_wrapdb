@@ -10,13 +10,19 @@ import argparse
 
 import json
 from pathlib import Path
-from urllib.request import urlopen
+from typing import Any
+
+def get_releases() -> Any:
+    with Path("releases.json").open("r", encoding="utf-8") as f:
+        releases = json.load(f)
+        return releases
 
 
 def generate_wrapdb_table(output_dir: Path, wrapdb_host: str) -> None:
-    url = urlopen(f"https://{wrapdb_host}/v2/releases.json")
-    releases = json.loads(url.read().decode())
     with open(output_dir / "table.html", "w", encoding="utf-8") as f:
+
+        releases = get_releases()
+
         f.write('<table id="projects">\n')
         f.write('<tr class="table-header"> <th class="proj">Project</th> <th class="version">Versions</th> <th class="deps">Provided dependencies</th> <th class="programs">Provided programs</th> </tr>\n')
         for name, info in releases.items():

@@ -6,12 +6,12 @@
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "compile": "tsc",
+    "compile": "tsc -P './tsconfig.web.json'",
     "move": "rimraf out/* && copyfiles -u 1 'static/**/*' './out/' && copyfiles -u 1 'dist/**/*' './out/js/'",
     "move:dev": "pnpm run move && copyfiles -u 1 'mock/**/*' './out/'",
     "build": "pnpm run compile && pnpm run move",
     "serve": "http-server './out/' -c-1 ",
-    "compile:watch": "tsc-watch --onSuccess \"pnpm run move:dev\"",
+    "compile:watch": "tsc-watch -P './tsconfig.web.json' --onSuccess \"pnpm run move:dev\"",
     "dev": "concurrently \"pnpm run compile:watch\" \"pnpm run serve\""
   },
   "packageManager": "pnpm@12.23.0",

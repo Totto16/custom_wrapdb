@@ -27,7 +27,7 @@ async function moveFileWithReplacements(
   for (const [key, value] of Object.entries(replacements)) {
     const realKey = key.replaceAll("-", "_").toUpperCase();
 
-    content = content.replace(`{{${realKey}}`, value);
+    content = content.replace(`{{${realKey}}}`, value);
   }
 
   await fsAsync.writeFile(outFile, content);

@@ -30,6 +30,8 @@ import shutil
 import tarfile
 import textwrap
 import zipfile
+from typing import Optional
+import dataclasses
 
 from pathlib import Path
 from utils import CIConfig, ProjectCIConfig, Releases, Version, ci_group, is_ci, is_alpinelike, is_debianlike, is_macos, is_windows, is_msys, read_wrap, FormattingError, format_meson, format_wrap
@@ -37,163 +39,27 @@ from utils import CIConfig, ProjectCIConfig, Releases, Version, ci_group, is_ci,
 MINIMUM_MESON_VERSION = '0.56.0'  # also in README.md
 PERMITTED_FILES = {'generator.sh', 'meson.build', 'meson_options.txt', 'meson.options', 'LICENSE.build'}
 PER_PROJECT_PERMITTED_FILES: dict[str, set[str]] = {
-    'aws-c-cal': {
-        'tests.txt',
-        'generate_tests.py',
-        'run_test.py',
-    },
-    'aws-c-common': {
-        'tests.txt',
-        'generate_tests.py',
-        'run_test.py',
-    },
-    'aws-c-compression': {
-        'tests.txt',
-        'generate_tests.py',
-        'run_test.py',
-    },
-    'box2d': {
-        'doctest.h'
-    },
-    'bzip2': {
-        'test.py',
-    },
-    'curl': {
-        'buildinfo.txt.meson',
-        'extract.mk',
-        'rewrite.mk',
-    },
-    'cpr': {
-        'cprexport.h',
-    },
-    'glbinding': {
-        'pch.h',
-        'glbinding_api.h',
-        'glbinding_features.h',
-        'glbinding_export.h',
-        'glbinding-aux_api.h',
-        'glbinding-aux_features.h',
-        'glbinding-aux_export.h'
-    },
-    'godot-cpp' : {
-         'meson-bindings-generator.py',
-     },
-    'gumbo-parser': {
-        'tokenizer.cc',
-    },
-    'icu': {
-        'export_module.py'
-    },
-    'id3tag': {
-        'genre_dat.py',
-    },
-    'lame': {
-        'fix_def.py',
-        'sym2ver.py',
-    },
-    'leptonica': {
-        '_skipped_test.c',
-    },
-    'libarchive': {
-        'mklist.py',
-    },
-    'libcap': {
-        'gen_cap_names.py',
-    },
-    'libcbor': {
-        'cbor_export.h',
-    },
-    'libexif': {
-        'def.py',
-    },
-    'libffi': {
-        'test-cc-supports-hidden-visibility.py',
-        'test-ro-eh-frame.py',
-        'test-cc-uses-zarch.py',
-        'test-unwind-section.py',
-        'extract-libtool-version.py',
-    },
-    'libgrapheme': {
-        'chdir_wrapper.py',
-    },
-    'libuv': {
-        'link_file_in_build_dir.py',
-    },
-    'luajit': {
-        'unwind_check.sh',
-    },
-    'm4': {
-        'm4_test_runner.py',
-    },
-    'mpdecimal': {
-        'gettests.py',
-    },
-    'nowide': {
-        'test_iostream_interactive.py',
-    },
-    'openal-soft': {
-        'hexify.py'
-    },
-    'openblas': {
-        'gen_install_headers.py',
-        'prepare_config_last.py',
-        'read_config.py',
-        'write_to_file.py',
-        'test_runner.c',
-        'run_fortran.c',
-    },
-    'openssl': {
-        'bn_conf.h',
-        'dso_conf.h',
-        'buildinf.h',
-        'generate_def.py',
-        'generate_gypi.pl.patch',
-        'meson.build.tmpl',
-        'README.md',
-    },
-    'pcre': {
-        'pcre.def',
-        'pcreposix.def'
-    },
-    'protobuf': {
-        'symlink_or_copy.py',
-    },
-    'sdl2': {
-        'find-dylib-name.py'
-    },
-    'soundtouch': {
-        'afxres.h'
-    },
-    'taglib': {
-        'checked.h'
-    },
-    'theora': {
-        'check-needed-tex-packages.py',
-        'latexmk-wrapper.py',
-        'test-tex-packages.py',
-        'doxyfile-patcher.py',
-        'arm2gnu-wrapper.py',
-        'generate_windows_rc.py',
-    },
-    'vo-aacenc': {
-        'makedef.py',
-        'stddef.h.in',
-    },
-    'zlib-ng': {
-        'get-version.py',
-        'process-zconf.py',
-    },
 }
-SOURCE_FILENAME_PREFIXES = {
-    'arduinocore-avr': 'avr',
-    'icu': 'icu4c',
-    'libtomcrypt': 'crypt',
+SOURCE_FILENAME_PREFIXES: dict[str, str] = {
+
 }
-MIT_LICENSE_BLOCKS = {'expat', 'freeglut', 'glew', 'google-brotli'}
-FORMAT_CHECK_FILES = {'meson.build', 'meson_options.txt', 'meson.options'}
-SUBPROJECTS_METADATA_FILES = {'subprojects/.gitignore'}
-PERMITTED_KEYS = {'versions', 'dependency_names', 'program_names'}
+MIT_LICENSE_BLOCKS: set[str] = set()
+FORMAT_CHECK_FILES: set[str]= {'meson.build', 'meson_options.txt', 'meson.options'}
+SUBPROJECTS_METADATA_FILES: set[str] = {'subprojects/.gitignore'}
+PERMITTED_KEYS: set[str]= {'versions', 'dependency_names', 'program_names'}
 IGNORE_SETUP_WARNINGS = None  # or re.compile(r'something')
+
+
+@dataclasses.dataclass()
+class RepoCfg:
+    oldest_tag: str
+    at_least_tags: int
+
+#NOTE; the original repo had this config
+#REPO_CFG: Optional[RepoCfg] = RepoCfg('abseil-cpp_20200225.2-1',2000)
+
+# but we don't have enough (or atm even 0) tags, to do that, change this later
+REPO_CFG: Optional[RepoCfg] = None
 
 
 class TestReleases(unittest.TestCase):
@@ -209,13 +75,25 @@ class TestReleases(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+
         # Take list of git tags.  Ignore tags unreachable from HEAD so we
         # don't fail on tags created after the branch was pushed.
         stdout = subprocess.check_output(['git', 'tag', '--merged'])
         cls.tags = {t.strip() for t in stdout.decode().splitlines()}
-        # Ensure we have one of the oldest tags in the repo, and roughly
-        # the expected number of tags
-        if 'abseil-cpp_20200225.2-1' not in cls.tags or len(cls.tags) < 2000:
+
+
+        is_shallow: bool
+        if REPO_CFG is None:
+            stdout = subprocess.check_output(['git', 'rev-list', '--count', 'HEAD'])
+
+            # Ensure we have roughly the expected number of commits
+            commit_amount = int(stdout.decode().splitlines()[0])
+            is_shallow = commit_amount < 2000
+        else:
+            # Ensure we have one of the oldest tags in the repo, and roughly
+            # the expected number of tags
+            is_shallow = REPO_CFG.oldest_tag not in cls.tags or len(cls.tags) < REPO_CFG.at_least_tags
+        if is_shallow:
             # Repo may have been cloned with --depth=N
             # git fetch --tags is not enough because we ignore tags
             # unreachable from HEAD

@@ -702,7 +702,7 @@ class TestReleases(unittest.TestCase):
             self.assertIn('license', project)  # project must specify license
             self.assertIs(type(project['license']), str)  # license must not use legacy list syntax
             try:
-                import license_expression  # type: ignore[import-untyped]
+                import license_expression  # type: ignore[import-untyped, import-not-found]
             except ImportError:
                 print('\nno license_expression library; skipping SPDX validation')
             else:

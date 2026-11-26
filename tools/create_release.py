@@ -15,8 +15,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-import io
-import sys
+import argparse
 import shutil
 import hashlib
 import requests
@@ -29,10 +28,11 @@ from pathlib import Path
 from utils import CIConfig, Releases, is_ci, is_debianlike, read_wrap, write_wrap
 
 class CreateRelease:
-    def __init__(self, repo: T.Optional[str], token: T.Optional[str], tag: str):
+    def __init__(self, repo: str, wrapdb_host: str, token: T.Optional[str], tag: str):
         print('Preparing release for:', tag)
         self.tag = tag
         self.name, self.version = self.tag.rsplit('_', 1)
+        self.wrapdb_host = wrapdb_host
         self.repo = repo
         self.token = token
 
@@ -99,8 +99,8 @@ class CreateRelease:
 
         del self.wrap_section['patch_directory']
         self.wrap_section['patch_filename'] = patch_filename.name
-        self.wrap_section['patch_url'] = f'https://wrapdb.mesonbuild.com/v2/{self.tag}/get_patch'
-        self.wrap_section['patch_fallback_url'] = f'https://github.com/mesonbuild/wrapdb/releases/download/{self.tag}/{patch_filename.name}'
+        self.wrap_section['patch_url'] = f'https://{self.wrapdb_host}/v2/{self.tag}/get_patch'
+        self.wrap_section['patch_fallback_url'] = f'https://github.com/{self.repo}/releases/download/{self.tag}/{patch_filename.name}'
         self.wrap_section['patch_hash'] = patch_hash
 
     def create_wrap_file(self) -> None:
@@ -182,7 +182,7 @@ class CreateRelease:
         filename = Path(self.tempdir, self.wrap_section['source_filename'])
         filename.write_bytes(response.content)
         self.upload(filename, 'application/zip')
-        self.wrap_section['source_fallback_url'] = f'https://wrapdb.mesonbuild.com/v2/{self.tag}/get_source/{filename.name}'
+        self.wrap_section['source_fallback_url'] = f'https://{self.wrapdb_host}/v2/{self.tag}/get_source/{filename.name}'
 
     def finalize(self) -> None:
         if not self.repo or not self.token:
@@ -201,7 +201,7 @@ def generate_site(releases: Releases) -> None:
     site.mkdir()
     releases.save(dir=site, compact=True)
 
-def run(repo: T.Optional[str], token: T.Optional[str]) -> None:
+def run(repo: str, wrapdb_host: str, token: T.Optional[str]) -> None:
     releases = Releases.load()
     stdout = subprocess.check_output(['git', 'tag'])
     tags = [t.strip() for t in stdout.decode().splitlines()]
@@ -209,12 +209,16 @@ def run(repo: T.Optional[str], token: T.Optional[str]) -> None:
         versions = info['versions']
         latest_tag = f'{name}_{versions[0]}'
         if latest_tag not in tags:
-            CreateRelease(repo, token, latest_tag)
+            CreateRelease(repo, wrapdb_host,token, latest_tag)
     generate_site(releases)
 
 if __name__ == '__main__':
-    # Support local testing when passing no arguments
-    repo = token = None
-    if len(sys.argv) > 1:
-        repo, token = sys.argv[1:]
-    run(repo, token)
+    parser = argparse.ArgumentParser(description="Generate wrapdb static website")
+    parser.add_argument("--repo", required=True)
+    parser.add_argument("--wrapdb-host", required=True)
+    parser.add_argument("--token", required=False, default=None)
+
+    args = parser.parse_args()
+
+
+    run(args.repo, args.wrapdb_host,args.token)

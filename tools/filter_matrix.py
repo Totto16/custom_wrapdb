@@ -20,6 +20,7 @@ import sys
 import yaml
 import typing as T
 
+#NOTE: we don't have access to all the necessary runners, so we leave this as is
 UPSTREAM_OWNER = 'mesonbuild'
 
 with open(sys.argv[1]) as f:

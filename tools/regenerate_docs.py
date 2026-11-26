@@ -13,8 +13,8 @@ from pathlib import Path
 from urllib.request import urlopen
 
 
-def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
-    url = urlopen(f"https://{hostname}/v2/releases.json")
+def generate_wrapdb_table(output_dir: Path, wrapdb_host: str) -> None:
+    url = urlopen(f"https://{wrapdb_host}/v2/releases.json")
     releases = json.loads(url.read().decode())
     with open(output_dir / "table.html", "w", encoding="utf-8") as f:
         f.write("| Project | Versions | Provided dependencies | Provided programs |\n")
@@ -27,7 +27,7 @@ def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
                 if tag not in added_tags:
                     added_tags.add(tag)
                     versions.append(
-                        f"[{v}](https://wrapdb.mesonbuild.com/v2/{name}_{v}/{name}.wrap)"
+                        f"[{v}](https://{wrapdb_host}/v2/{name}_{v}/{name}.wrap)"
                     )
             # Highlight latest version.
             versions_str = f"<big>**{versions[0]}**</big><br/>" + ", ".join(
@@ -45,8 +45,8 @@ def generate_wrapdb_table(output_dir: Path, hostname: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate wrapdb static website")
     parser.add_argument("--output-dir", required=True)
-    parser.add_argument("--hostname", required=True)
+    parser.add_argument("--wrapdb-host", required=True)
 
     args = parser.parse_args()
 
-    generate_wrapdb_table(output_dir=Path(args.output_dir), hostname=args.hostname)
+    generate_wrapdb_table(output_dir=Path(args.output_dir), wrapdb_host=args.wrapdb_host)

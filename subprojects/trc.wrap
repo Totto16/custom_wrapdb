@@ -1,8 +1,8 @@
 [wrap-file]
-directory = trc-8237ae5f74dd57da89cb8c2a05d4b08a826de858
-source_url = https://github.com/Totto16/trc/archive/8237ae5f74dd57da89cb8c2a05d4b08a826de858.tar.gz
-source_filename = trc-8237ae5f74dd57da89cb8c2a05d4b08a826de858.tar.gz
-source_hash = 31ff3a7bb65b12796d5c751604615ca332e4f64daae33cbb201fedd136b413f1
+directory = trc-1.0.1
+source_url = https://github.com/Totto16/trc/archive/refs/tags/v1.0.1.tar.gz
+source_filename = trc-1.0.1.tar.gz
+source_hash = effe4624260d6e269456f3ab9d6938676cf586498d95a51a8abbbbd7df886ba1
 
 [provide]
 dependency_names = trc
